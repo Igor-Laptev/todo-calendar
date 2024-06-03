@@ -1,13 +1,8 @@
-.app {
-  text-align: center;
-  font-family: Arial, sans-serif;
-}
-
+/* src/styles/main.css */
 .calendar {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 10px;
-  padding: 20px;
 }
 
 .day {
@@ -20,4 +15,27 @@
 
 .day-off {
   background: #ffcccc;
+}
+
+.tasks-count {
+  font-size: 0.8em;
+  color: #999;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 5px;
 }
