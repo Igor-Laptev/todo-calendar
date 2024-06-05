@@ -1,14 +1,13 @@
-/* eslint-disable react-refresh/only-export-components */
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useState, ReactNode, useEffect } from 'react';
 
-interface Task {
+export interface Task {
   id: number;
   text: string;
   completed: boolean;
   date: Date;
 }
 
-interface TaskContextType {
+export interface TaskContextType {
   tasks: Task[];
   addTask: (task: Task) => void;
   removeTask: (id: number) => void;
@@ -17,10 +16,24 @@ interface TaskContextType {
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
 
+const parseTasks = (tasks: any[]): Task[] => {
+  return tasks.map((task) => ({
+    ...task,
+    date: new Date(task.date),
+  }));
+};
+
 export const TaskProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<Task[]>(() => {
+    const savedTasks = localStorage.getItem('tasks');
+    return savedTasks ? parseTasks(JSON.parse(savedTasks)) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }, [tasks]);
 
   const addTask = (task: Task) => setTasks((prev) => [...prev, task]);
   const removeTask = (id: number) =>
@@ -39,10 +52,4 @@ export const TaskProvider: React.FC<{ children: ReactNode }> = ({
   );
 };
 
-export const useTasks = () => {
-  const context = useContext(TaskContext);
-  if (!context) {
-    throw new Error('useTasks must be used within a TaskProvider');
-  }
-  return context;
-};
+export default TaskContext;
