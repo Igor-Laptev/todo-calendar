@@ -4,7 +4,7 @@
 
 ## Календарь
 
-![Календарь](./todo-calendar/image.png)
+![Календарь](./todo-calendar/public/image.png)
 
 ## Установка
 
