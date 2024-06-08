@@ -1,63 +1,50 @@
 import React, { useState } from 'react';
+import { format } from 'date-fns';
+import { ru } from 'date-fns/locale';
 import useTasks from '../hooks/useTasks';
-import { Task } from '../contexts/TaskContext';
 
-const Modal: React.FC<{ date: Date; onClose: () => void }> = ({
-  date,
-  onClose,
-}) => {
+interface ModalProps {
+  date: Date;
+  onClose: () => void;
+}
+
+const Modal: React.FC<ModalProps> = ({ date, onClose }) => {
   const { tasks, addTask, removeTask, toggleTask } = useTasks();
   const [taskText, setTaskText] = useState('');
-  const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
 
   const handleAddTask = () => {
-    const newTask: Task = {
-      id: Date.now(),
-      text: taskText,
-      completed: false,
-      date,
-    };
+    const newTask = { id: Date.now(), text: taskText, completed: false, date };
     addTask(newTask);
     setTaskText('');
   };
 
-  const handleSelectTask = (taskId: number) => {
-    setSelectedTaskId(selectedTaskId === taskId ? null : taskId);
-  };
-
   return (
-    <>
-      <div className='modal-overlay' onClick={onClose}></div>
-      <div className='modal'>
-        <h2>Tasks for {date.toDateString()}</h2>
+    <div className='modal'>
+      <div className='modal-content'>
+        <h2>Задачи на {format(date, 'EEEE, d MMMM yyyy', { locale: ru })}</h2>
         <ul>
           {tasks
             .filter((task) => task.date.getTime() === date.getTime())
-            .map((task: Task) => (
+            .map((task) => (
               <li
                 key={task.id}
-                className={`task-item ${task.completed ? 'completed' : ''} ${
-                  selectedTaskId === task.id ? 'selected' : ''
-                }`}
-                onClick={() => handleSelectTask(task.id)}
+                className={`task-item ${task.completed ? 'completed' : ''}`}
               >
                 <span>{task.text}</span>
-                {selectedTaskId === task.id && (
-                  <>
-                    <button
-                      className='button-completed'
-                      onClick={() => toggleTask(task.id)}
-                    >
-                      Выполнено
-                    </button>
-                    <button
-                      className='button-delete'
-                      onClick={() => removeTask(task.id)}
-                    >
-                      Удалить
-                    </button>
-                  </>
-                )}
+                <div>
+                  <button
+                    className='button-completed'
+                    onClick={() => toggleTask(task.id)}
+                  >
+                    Выполнено
+                  </button>
+                  <button
+                    className='button-delete'
+                    onClick={() => removeTask(task.id)}
+                  >
+                    Удалить
+                  </button>
+                </div>
               </li>
             ))}
         </ul>
@@ -66,15 +53,15 @@ const Modal: React.FC<{ date: Date; onClose: () => void }> = ({
             type='text'
             value={taskText}
             onChange={(e) => setTaskText(e.target.value)}
-            placeholder='New task'
+            placeholder='Новая задача'
           />
-          <button onClick={handleAddTask}>Add Task</button>
+          <button onClick={handleAddTask}>Добавить</button>
         </div>
         <div className='modal-footer'>
-          <button onClick={onClose}>Close</button>
+          <button onClick={onClose}>Закрыть</button>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
